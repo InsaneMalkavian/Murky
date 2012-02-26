@@ -56,7 +56,6 @@ MurkyApp::MurkyApp():hWnd(0), hInst(0), stateManager(NULL), texManager(NULL) {
 	hwInfo.GetAllInfo(tempVar);
 	Log::logger.AddLine(tempVar);
 	render = new Renderer();
-	stateManager = new StateManager();
 	}
 
 MurkyApp::~MurkyApp() {
@@ -68,6 +67,7 @@ MurkyApp::~MurkyApp() {
 HRESULT MurkyApp::InitDevice(void) {
     render->InitDevice(hWnd);
 	texManager = new TextureManager(render->GetDevice());
+	stateManager = new StateManager();
 	return S_OK;
 	}
 

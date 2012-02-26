@@ -1,6 +1,9 @@
 #include "Renderer.h"
 #include <DxErr.h>
+#include <sstream>
 #include "Logger.h"
+
+static const wstring WSTR_RENDERER = L"Renderer: ";
 
 Renderer::Renderer(void) {
 	backBufferTarget = 0;
@@ -80,6 +83,11 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
         return S_FALSE;
     }
 
+	DXGI_ADAPTER_DESC desc = {0};
+	GetDeviceInfo(desc);
+	Log::logger.AddLine(WSTR_RENDERER+L"Device, swapchain and context created!");
+	Log::logger.AddLine(WSTR_RENDERER+L"DX FeatureLevel: "+GetDXFeatureLevel());
+	
     ID3D11Texture2D* backBufferTexture;
 
     result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferTexture);
@@ -135,4 +143,20 @@ void Renderer::Render() {
     d3dContext->ClearRenderTargetView(backBufferTarget, clearColor);
 
     swapChain->Present( 0, 0 );
+	}
+
+void Renderer::GetDeviceInfo(DXGI_ADAPTER_DESC &desc) {
+	IDXGIDevice * pDXGIDevice;
+	d3dDevice->QueryInterface(__uuidof(IDXGIDevice), (void **)&pDXGIDevice);
+	IDXGIAdapter * pDXGIAdapter;
+	pDXGIDevice->GetAdapter(&pDXGIAdapter);
+	pDXGIAdapter->GetDesc(&desc);
+	}
+
+wstring Renderer::GetDXFeatureLevel(void) {
+	const size_t highOffset = 12;
+	const size_t lowOffset = 8;
+	std::wstringstream streamVal;
+	streamVal<<((featureLevel>>highOffset)&0x000f)<<L"."<<((featureLevel>>lowOffset)&0x000f);
+	return streamVal.str();
 	}

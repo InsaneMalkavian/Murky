@@ -12,6 +12,14 @@ public:
 	int AddLine(string filename);
 	int AddLine(wstring filename);
 	int AddLine(char *to_file);
+	template <class T>	
+	int LogOnDebug(T to_file) {
+	#if defined(DEBUG) | defined(_DEBUG)
+	return AddLine(to_file);
+	#else
+	return 0;
+	#endif
+	}
 	int IsActive(void);
 
 private:

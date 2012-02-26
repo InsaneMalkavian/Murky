@@ -152,6 +152,7 @@
     <ClCompile Include="Murky.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceBase.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Sources\Resources\TextureManager.cpp" />
     <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="StateStart.cpp" />
@@ -159,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="HardwareInfo.h" />
     <ClInclude Include="ResourceBase.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Sources\Resources\TextureManager.h" />
     <ClInclude Include="StateBase.h" />
     <ClInclude Include="Logger.h" />

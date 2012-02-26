@@ -1,6 +1,7 @@
 #include "TextureManager.h"
 #include <D3DX11tex.h>
 #include <string>
+#include "Logger.h"
 
 using namespace std;
 
@@ -10,6 +11,7 @@ TextureManager::TextureManager(ID3D11Device* device): m_d3dDevice(device) {
 	// there is nothing to do here
 	// load some necessary textures (dummy and etc)
 	Get(WSTR_DUMMY_TEXTURE);
+	Log::logger.AddLine(L"TexMgr started");
 }
 
 TextureManager::~TextureManager() {
@@ -22,6 +24,7 @@ ID3D11ShaderResourceView* TextureManager::Get(wstring name) {
 	for (size_t i = 0; i<m_Textures.size(); ++i)
 		if (m_Textures[i].name == name) {
 			m_Textures[i].refCount++;
+			Log::logger.AddLine(L"Texture: "+name+L" already loaded");
 			return m_Textures[i].shaderRV;
 			}
 
@@ -36,11 +39,12 @@ ID3D11ShaderResourceView* TextureManager::Get(wstring name) {
 	if (GetFileAttributes(name.c_str()) != DWORD(-1)) { // if file exist
 		HR(D3DX11CreateShaderResourceViewFromFile(m_d3dDevice, name.c_str(), &loadInfo, 0, &rv, 0 ));
 		}
-	else {
+	else { // this will cause endless recurse if dummy.dds doesnt exist!
 		rv = Get(WSTR_DUMMY_TEXTURE);
 		}
 
 	m_Textures.push_back(TexObject(name, rv));
+	Log::logger.AddLine(L"Texture: "+name+L" loaded");
 	return rv;
 }
 
@@ -58,6 +62,7 @@ void TextureManager::Release(std::wstring name) {
 		if (m_Textures[i].name == name) {
 			m_Textures[i].refCount--;
 			removedItem=i;
+			Log::logger.AddLine(L"Texture: "+name+L" RefCount decreased");
 			break;
 			}
 	if (removedItem!=-1 && m_Textures[removedItem].refCount==0) { // destroy texture

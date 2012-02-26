@@ -39,7 +39,7 @@ int Logger::AddLine(wstring to_file) {
 	int res = -1;
 	if (info) {
 		char *str = new char[to_file.length()+1];
-		sprintf(str,"%ls",to_file.c_str());
+		sprintf_s(str,to_file.length()+1,"%ls",to_file.c_str());
 		res = fputs (str,info);
 		fputc('\n',info);
 		fflush (info);
@@ -57,3 +57,12 @@ int Logger::AddLine(char *to_file) {
 		}
 	return res;
 	}
+
+/*template <class T>
+int Logger::LogOnDebug(T to_file) {
+	#if defined(DEBUG) | defined(_DEBUG)
+	return AddLine(to_file);
+	#else
+	return 0;
+	#endif
+	}*/
