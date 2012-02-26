@@ -5,11 +5,12 @@ class Renderer
 	{
 	public:
 		Renderer(void);
+		virtual ~Renderer(void);
+		ID3D11Device* GetDevice(void) {return d3dDevice;}
 		HRESULT InitDevice(HWND hWnd);
 		HRESULT DestroyDevice(void);
 		HRESULT Update(void);
 		void Render(void);
-		virtual ~Renderer(void);
 	private:
 		D3D_DRIVER_TYPE				driverType;
 		D3D_FEATURE_LEVEL			featureLevel;

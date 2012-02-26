@@ -10,6 +10,7 @@ typedef BOOL (WINAPI *PGPI)(DWORD, DWORD, DWORD, DWORD, PDWORD);
 
 
 HWInformation::HWInformation() {
+	ZeroMemory(this, sizeof(HWInformation));
 	Initialize();
 	Update();
 }

@@ -7,6 +7,7 @@
 #include "HardwareInfo.h"
 #include "Renderer.h"
 #include "StateManager.h"
+#include "TextureManager.h"
 
 class MurkyApp {
 public:
@@ -20,7 +21,8 @@ public:
 protected:
 	HWND					hWnd;
 	HINSTANCE				hInst;
-	HWInformation*			hwInfo;
+	HWInformation			hwInfo;
 	Renderer*				render;
 	StateManager*			stateManager;
+	TextureManager*			texManager;
 	};

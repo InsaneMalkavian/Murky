@@ -34,23 +34,21 @@ class HWInformation {
 public:
 	HWInformation();
 	~HWInformation();
-	Videocard			Video;
-	MEMORYSTATUSEX		RAMStat;
-	OSVERSIONINFOEX		OSVersion;
-	CPU					CPUInfo;
-private:
-	HRESULT				hRes;
-	IWbemLocator*		pLoc;
-	IWbemServices*		pSvc;	
-
-public:
-	void Update();
-	
+	void Update();	
 	void GetVideoInfo(wstring &output);
 	void GetCPUInfo(wstring &output);
 	void GetMemInfo(wstring &output);
 	int GetOSInfo(wstring &output);
 	int GetAllInfo(wstring &output);
+
+private:
+	HRESULT				hRes;
+	IWbemLocator*		pLoc;
+	IWbemServices*		pSvc;
+	Videocard			Video;
+	MEMORYSTATUSEX		RAMStat;
+	OSVERSIONINFOEX		OSVersion;
+	CPU					CPUInfo;
 
 private:
 	int Initialize();

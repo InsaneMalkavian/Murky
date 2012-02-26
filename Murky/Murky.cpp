@@ -1,6 +1,7 @@
 #include "Murky.h"
 #include <DxErr.h>
 #include "Logger.h"
+
 //--------------------------------------------------------------------------------------
 // Forward declarations
 //--------------------------------------------------------------------------------------
@@ -49,11 +50,10 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
     return (int)msg.wParam;
 }
 
-MurkyApp::MurkyApp():hWnd(0), hInst(0), hwInfo(NULL), stateManager(NULL) {
+MurkyApp::MurkyApp():hWnd(0), hInst(0), stateManager(NULL), texManager(NULL) {
 	wstring tempVar; // this var is used for misc local purposes
 	Log::logger.AddLine("it seems we started");
-	hwInfo = new HWInformation();
-	hwInfo->GetAllInfo(tempVar);
+	hwInfo.GetAllInfo(tempVar);
 	Log::logger.AddLine(tempVar);
 	render = new Renderer();
 	stateManager = new StateManager();
@@ -62,11 +62,12 @@ MurkyApp::MurkyApp():hWnd(0), hInst(0), hwInfo(NULL), stateManager(NULL) {
 MurkyApp::~MurkyApp() {
 	delete stateManager;
 	delete render;
-	delete hwInfo;
+	delete texManager;
 	}
 
 HRESULT MurkyApp::InitDevice(void) {
     render->InitDevice(hWnd);
+	texManager = new TextureManager(render->GetDevice());
 	return S_OK;
 	}
 

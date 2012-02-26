@@ -6,7 +6,6 @@ class StateManager
 		StateManager(void);
 		~StateManager(void);
 	private:
-		int mPlaceholder;
-		StateBase* state;
+		StateBase* mState;
 	};
 
