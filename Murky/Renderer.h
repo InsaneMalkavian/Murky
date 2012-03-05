@@ -24,5 +24,11 @@ class Renderer
 		ID3D11DeviceContext*		d3dContext;
 		IDXGISwapChain*				swapChain;
 		ID3D11RenderTargetView*		backBufferTarget;
+
+		ID3D11Texture2D*			mDepthTexture;
+        ID3D11DepthStencilView*		mDepthStencilView;
+
+		// delete it
+		ID3D11Buffer*				mVertexBuffer;
 	};
 

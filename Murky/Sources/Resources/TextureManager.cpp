@@ -16,16 +16,16 @@ TextureManager::TextureManager(ID3D11Device* device): m_d3dDevice(device) {
 
 TextureManager::~TextureManager() {
 	for(size_t i = 0; i < m_Textures.size(); ++i)
-		Util::SafeRelease(m_Textures[i].shaderRV);
+		Util::SafeRelease(m_Textures[i]->shaderRV);
 }
 
 ID3D11ShaderResourceView* TextureManager::Get(wstring name) {
 	// has this texture already been created?
 	for (size_t i = 0; i<m_Textures.size(); ++i)
-		if (m_Textures[i].name == name) {
-			m_Textures[i].refCount++;
+		if (m_Textures[i]->name == name) {
+			m_Textures[i]->refCount++;
 			Log::logger.AddLine(L"Texture: "+name+L" already loaded");
-			return m_Textures[i].shaderRV;
+			return m_Textures[i]->shaderRV;
 			}
 
 	// if not, create it
@@ -42,8 +42,8 @@ ID3D11ShaderResourceView* TextureManager::Get(wstring name) {
 	else { // this will cause endless recurse if dummy.dds doesnt exist!
 		rv = Get(WSTR_DUMMY_TEXTURE);
 		}
-
-	m_Textures.push_back(TexObject(name, rv));
+	TexObject* tex = new TexObject(name, rv);
+	m_Textures.push_back(tex);
 	Log::logger.AddLine(L"Texture: "+name+L" loaded");
 	return rv;
 }
@@ -59,14 +59,15 @@ void TextureManager::Release(std::wstring name) {
 	// has this texture been created?
 	size_t removedItem = -1;
 	for (size_t i = 0; i<m_Textures.size(); ++i)
-		if (m_Textures[i].name == name) {
-			m_Textures[i].refCount--;
+		if (m_Textures[i]->name == name) {
+			m_Textures[i]->refCount--;
 			removedItem=i;
 			Log::logger.AddLine(L"Texture: "+name+L" RefCount decreased");
 			break;
 			}
-	if (removedItem!=-1 && m_Textures[removedItem].refCount==0) { // destroy texture
-		Util::SafeRelease(m_Textures[removedItem].shaderRV);
+	if (removedItem!=-1 && m_Textures[removedItem]->refCount==0) { // destroy texture
+		Util::SafeRelease(m_Textures[removedItem]->shaderRV);
+		delete m_Textures[removedItem]; // @TODO: check this!
 		m_Textures.erase(m_Textures.begin()+removedItem); // maybe there should be +(removedItem-1), check it out!
 		}
 	}

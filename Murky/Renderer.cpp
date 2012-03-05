@@ -2,14 +2,20 @@
 #include <DxErr.h>
 #include <sstream>
 #include "Logger.h"
+#include "Shaders.h"
 
 static const wstring WSTR_RENDERER = L"Renderer: ";
 
+struct SimpleVertex
+{
+    XMFLOAT3 Pos;
+};
+
 Renderer::Renderer(void) {
-	backBufferTarget = 0;
-	swapChain = 0;
-	d3dContext = 0;
-	d3dDevice = 0;
+	backBufferTarget = NULL;
+	swapChain = NULL;
+	d3dContext = NULL;
+	d3dDevice = NULL;
 	}
 
 
@@ -107,6 +113,41 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
         return S_FALSE;
     }
 
+	D3D11_TEXTURE2D_DESC depthTexDesc;
+    ZeroMemory( &depthTexDesc, sizeof( depthTexDesc ) );
+    depthTexDesc.Width = width;
+    depthTexDesc.Height = height;
+    depthTexDesc.MipLevels = 1;
+    depthTexDesc.ArraySize = 1;
+    depthTexDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+    depthTexDesc.SampleDesc.Count = 1;
+    depthTexDesc.SampleDesc.Quality = 0;
+    depthTexDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthTexDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    depthTexDesc.CPUAccessFlags = 0;
+    depthTexDesc.MiscFlags = 0;
+
+    result = d3dDevice->CreateTexture2D(&depthTexDesc, NULL, &mDepthTexture);
+
+    if (FAILED(result)) {
+        DXTRACE_MSG(L"Failed to create the depth texture!");
+        return false;
+    }
+
+    // Create the depth stencil view
+    D3D11_DEPTH_STENCIL_VIEW_DESC descDSV;
+    ZeroMemory( &descDSV, sizeof( descDSV ) );
+    descDSV.Format = depthTexDesc.Format;
+    descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    descDSV.Texture2D.MipSlice = 0;
+
+    result = d3dDevice->CreateDepthStencilView(mDepthTexture, &descDSV, &mDepthStencilView);
+
+    if (FAILED(result)) {
+        DXTRACE_MSG(L"Failed to create the depth stencil target view!");
+        return false;
+    }
+
     d3dContext->OMSetRenderTargets(1, &backBufferTarget, 0);
 
     D3D11_VIEWPORT viewport;
@@ -118,6 +159,33 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
     viewport.TopLeftY = 0.0f;
 
     d3dContext->RSSetViewports(1, &viewport);
+
+	// Initialize all shaders
+	fx::InitAll(d3dDevice);
+
+
+	// @TODO: All this code should be removed!
+	// Create vertex buffer
+    SimpleVertex vertices[] =
+    {
+        XMFLOAT3( 0.0f, 0.5f, 0.5f ),
+        XMFLOAT3( 0.5f, -0.5f, 0.5f ),
+        XMFLOAT3( -0.5f, -0.5f, 0.5f ),
+    };
+    D3D11_BUFFER_DESC bd;
+	ZeroMemory( &bd, sizeof(bd) );
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof( SimpleVertex ) * 3;
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+    D3D11_SUBRESOURCE_DATA InitData;
+	ZeroMemory( &InitData, sizeof(InitData) );
+    InitData.pSysMem = vertices;
+    result = d3dDevice->CreateBuffer( &bd, &InitData, &mVertexBuffer );
+    if (FAILED(result))
+        return result;
+
+    
 
     return S_OK;
 	}
@@ -141,6 +209,21 @@ void Renderer::Render() {
 
     float clearColor[4] = { 0.0f, 0.0f, 0.25f, 1.0f };
     d3dContext->ClearRenderTargetView(backBufferTarget, clearColor);
+	d3dContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
+
+	// Set vertex buffer
+    UINT stride = sizeof( SimpleVertex );
+    UINT offset = 0;
+    d3dContext->IASetVertexBuffers( 0, 1, &mVertexBuffer, &stride, &offset );
+
+    // Set primitive topology
+    d3dContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
+
+	// Render a triangle
+	d3dContext->IASetInputLayout(fx::SimpleShader::IL);
+	d3dContext->VSSetShader(fx::SimpleShader::VS, NULL, 0 );
+	d3dContext->PSSetShader(fx::SimpleShader::PS, NULL, 0 );
+    d3dContext->Draw( 3, 0 );
 
     swapChain->Present( 0, 0 );
 	}

@@ -1,6 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <D3D11.h>
+#include <xnamath.h>
 #include <DxErr.h>
 #include <vector>
 #include <string>
