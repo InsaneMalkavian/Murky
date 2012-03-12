@@ -15,6 +15,7 @@ Renderer::Renderer(void) {
 	d3dDevice = NULL;
 	mDepthTexture = NULL;
 	mDepthStencilView = NULL;
+	mDepthStencilView = NULL;
 	}
 
 
