@@ -7,6 +7,7 @@
 #include "HardwareInfo.h"
 #include "Renderer.h"
 #include "StateManager.h"
+#include "SceneManager.h"
 #include "TextureManager.h"
 
 class MurkyApp {
@@ -18,11 +19,13 @@ public:
 	HRESULT DestroyDevice(void);
 	HRESULT Update(void);
 	void Render(void);
+	void LoadMess(void); // @TODO: delete it
 protected:
 	HWND					hWnd;
 	HINSTANCE				hInst;
 	HWInformation			hwInfo;
 	Renderer*				render;
 	StateManager*			stateManager;
+	SceneManager*			sceneManager;
 	TextureManager*			texManager;
 	};

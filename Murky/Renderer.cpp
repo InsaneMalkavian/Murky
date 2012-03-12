@@ -3,19 +3,18 @@
 #include <sstream>
 #include "Logger.h"
 #include "Shaders.h"
+#include "Datatypes.h"
+#include "Utility.h"
 
 static const wstring WSTR_RENDERER = L"Renderer: ";
-
-struct SimpleVertex
-{
-    XMFLOAT3 Pos;
-};
 
 Renderer::Renderer(void) {
 	backBufferTarget = NULL;
 	swapChain = NULL;
 	d3dContext = NULL;
 	d3dDevice = NULL;
+	mDepthTexture = NULL;
+	mDepthStencilView = NULL;
 	}
 
 
@@ -163,69 +162,22 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
 	// Initialize all shaders
 	fx::InitAll(d3dDevice);
 
-
-	// @TODO: All this code should be removed!
-	// Create vertex buffer
-    SimpleVertex vertices[] =
-    {
-        XMFLOAT3( 0.0f, 0.5f, 0.5f ),
-        XMFLOAT3( 0.5f, -0.5f, 0.5f ),
-        XMFLOAT3( -0.5f, -0.5f, 0.5f ),
-    };
-    D3D11_BUFFER_DESC bd;
-	ZeroMemory( &bd, sizeof(bd) );
-    bd.Usage = D3D11_USAGE_DEFAULT;
-    bd.ByteWidth = sizeof( SimpleVertex ) * 3;
-    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.CPUAccessFlags = 0;
-    D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory( &InitData, sizeof(InitData) );
-    InitData.pSysMem = vertices;
-    result = d3dDevice->CreateBuffer( &bd, &InitData, &mVertexBuffer );
-    if (FAILED(result))
-        return result;
-
-    
-
     return S_OK;
 	}
 
 HRESULT Renderer::DestroyDevice(void) {
-	if (backBufferTarget) backBufferTarget->Release( );
-	if (swapChain) swapChain->Release( );
-	if (d3dContext) d3dContext->Release( );
-	if (d3dDevice) d3dDevice->Release( );
-
-	backBufferTarget = 0;
-	swapChain = 0;
-	d3dContext = 0;
-	d3dDevice = 0;
+	Util::SafeRelease(mDepthStencilView);
+	Util::SafeRelease(mDepthTexture);
+	Util::SafeRelease(backBufferTarget);
+	Util::SafeRelease(swapChain);
+	Util::SafeRelease(d3dContext);
+	Util::SafeRelease(d3dDevice);	
 	return S_OK;
 	}
 
 void Renderer::Render() {
-	if (d3dContext == 0)
-        return;
-
-    float clearColor[4] = { 0.0f, 0.0f, 0.25f, 1.0f };
-    d3dContext->ClearRenderTargetView(backBufferTarget, clearColor);
-	d3dContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0 );
-
-	// Set vertex buffer
-    UINT stride = sizeof( SimpleVertex );
-    UINT offset = 0;
-    d3dContext->IASetVertexBuffers( 0, 1, &mVertexBuffer, &stride, &offset );
-
-    // Set primitive topology
-    d3dContext->IASetPrimitiveTopology( D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST );
-
-	// Render a triangle
-	d3dContext->IASetInputLayout(fx::SimpleShader::IL);
-	d3dContext->VSSetShader(fx::SimpleShader::VS, NULL, 0 );
-	d3dContext->PSSetShader(fx::SimpleShader::PS, NULL, 0 );
-    d3dContext->Draw( 3, 0 );
-
-    swapChain->Present( 0, 0 );
+	// this should be removed
+	d3dContext->Draw(3, 0);
 	}
 
 void Renderer::GetDeviceInfo(DXGI_ADAPTER_DESC &desc) {
@@ -243,3 +195,18 @@ wstring Renderer::GetDXFeatureLevel(void) {
 	streamVal<<((featureLevel>>highOffset)&0x000f)<<L"."<<((featureLevel>>lowOffset)&0x000f);
 	return streamVal.str();
 	}
+
+
+void Renderer::ClearScene(void) {
+	if (d3dContext == 0)
+        return;
+
+    float clearColor[4] = { 0.0f, 0.0f, 0.25f, 1.0f };
+    d3dContext->ClearRenderTargetView(backBufferTarget, clearColor);
+	d3dContext->ClearDepthStencilView(mDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+	}
+
+void Renderer::Present(void) {
+    swapChain->Present(0, 0);
+	}
+		

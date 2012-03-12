@@ -4,8 +4,6 @@
 
 using namespace fx;
 
-//#define INITGUID	(1)
-
 ID3D11VertexShader*	SimpleShader::VS = 0;
 ID3D11PixelShader*	SimpleShader::PS = 0;
 ID3D11InputLayout*	SimpleShader::IL = 0;

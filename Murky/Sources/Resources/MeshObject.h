@@ -17,22 +17,10 @@ class MeshObject : public BaseObject
 			}
 		virtual ~MeshObject(void);
 		
-        ID3D11VertexShader*		m_VertexShader;
-        ID3D11PixelShader*		m_PixelShader;
+        ID3D11Buffer*			mVertexBuffer;
+		ID3D11Buffer*			mIndexBuffer;
+        size_t					mTotalVertices;
+		UINT					mStride;
 		
-        ID3D11InputLayout*		m_InputLayout;
-        ID3D11Buffer*			m_VertexBuffer;
-		ID3D11Buffer*			m_IndexBuffer;
-        size_t					m_TotalVertices;
-		
-		// @TODO: code below should be moved to ModelObject
-
-        ID3D11ShaderResourceView*	m_ColorMap;
-        ID3D11SamplerState*			m_ColorMapSampler;
-		
-        ID3D11Buffer*			m_ViewCB;
-        ID3D11Buffer*			m_ProjCB;
-        ID3D11Buffer*			m_WorldCB;
-        //XMMATRIX				m_ProjMatrix;
 	};
 

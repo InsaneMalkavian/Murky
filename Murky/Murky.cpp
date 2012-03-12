@@ -5,7 +5,7 @@
 //--------------------------------------------------------------------------------------
 // Forward declarations
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK			WndProc( HWND, UINT, WPARAM, LPARAM );
+LRESULT CALLBACK			WndProc(HWND, UINT, WPARAM, LPARAM);
 
 MurkyApp*					murky = NULL;
 
@@ -31,6 +31,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
         return 0;
     }
 
+	murky->LoadMess();
     // Main message loop
     MSG msg = {0};
     while (WM_QUIT != msg.message) {
@@ -50,7 +51,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdL
     return (int)msg.wParam;
 }
 
-MurkyApp::MurkyApp():hWnd(0), hInst(0), stateManager(NULL), texManager(NULL) {
+MurkyApp::MurkyApp():hWnd(0), hInst(0), stateManager(NULL), texManager(NULL), sceneManager(NULL) {
 	wstring tempVar; // this var is used for misc local purposes
 	Log::logger.AddLine("it seems we started");
 	hwInfo.GetAllInfo(tempVar);
@@ -68,6 +69,7 @@ HRESULT MurkyApp::InitDevice(void) {
     render->InitDevice(hWnd);
 	texManager = new TextureManager(render->GetDevice());
 	stateManager = new StateManager();
+	sceneManager = new SceneManager(render);
 	return S_OK;
 	}
 
@@ -81,7 +83,14 @@ HRESULT MurkyApp::Update(void) {
 	}
 
 void MurkyApp::Render(void) {
+	render->ClearScene();
+	sceneManager->Render();
 	render->Render();
+	render->Present();
+	}
+
+void MurkyApp::LoadMess(void) {
+	sceneManager->Get(L"StaticModel");
 	}
 
 //--------------------------------------------------------------------------------------

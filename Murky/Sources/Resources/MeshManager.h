@@ -1,11 +1,12 @@
 #pragma once
 #include "Utility.h"
 #include "MeshObject.h"
+#include "Renderer.h"
 
 class MeshManager
 	{
 	public:
-		MeshManager(void);
+		MeshManager(Renderer* render);
 		~MeshManager(void);
 		MeshObject* Get(std::wstring name); // returns wanted resourceview instantly, will cause freeze!
 		MeshObject* GetAsync(std::wstring name); // returns dummy RV instantly, notify when wanted RV will be available, no freeze
@@ -16,7 +17,7 @@ class MeshManager
 		size_t GetNumber(void) {return m_Meshes.size();} // returns number of loaded textures
 
 	private:
-		ID3D11Device* m_d3dDevice;
-		std::vector<MeshObject*> m_Meshes;
+		std::vector<MeshObject*>			m_Meshes;
+		Renderer*							mRender;
 };
 

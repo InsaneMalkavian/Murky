@@ -10,3 +10,8 @@ struct VerPT {
 	XMFLOAT3 Pos;
 	XMFLOAT2 Tex1;
 	};
+
+// @TODO: these types should be refactored
+struct SimpleVertex {
+    XMFLOAT3 Pos;
+};

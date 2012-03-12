@@ -7,6 +7,7 @@ using namespace std;
 
 class Renderer
 	{
+	friend class MurkyApp;
 	public:
 		Renderer(void);
 		virtual ~Renderer(void);
@@ -14,7 +15,10 @@ class Renderer
 		HRESULT DestroyDevice(void);
 		HRESULT Update(void);
 		void Render(void);
+		void ClearScene(void);
+		void Present(void);
 		ID3D11Device* GetDevice(void) {return d3dDevice;}
+		ID3D11DeviceContext* GetDeviceContext(void) {return d3dContext;}
 		void GetDeviceInfo(DXGI_ADAPTER_DESC &desc);
 	private:
 		wstring						GetDXFeatureLevel(void);
@@ -27,8 +31,5 @@ class Renderer
 
 		ID3D11Texture2D*			mDepthTexture;
         ID3D11DepthStencilView*		mDepthStencilView;
-
-		// delete it
-		ID3D11Buffer*				mVertexBuffer;
 	};
 
