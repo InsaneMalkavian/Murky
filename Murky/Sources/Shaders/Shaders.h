@@ -9,11 +9,13 @@ namespace fx
 		extern ID3D11VertexShader*		VS;
         extern ID3D11PixelShader*		PS;
 		extern ID3D11InputLayout*		IL;
-
-		//extern ID3D10EffectShaderResourceVariable*	pMainTextureVariable;
-		//extern ID3D10EffectTechnique*				pSecondTechnique;
 		}
 	
+	namespace TestShader2 {
+		extern ID3D11VertexShader*		VS;
+		extern ID3D11PixelShader*		PS;
+		extern ID3D11InputLayout*		IL;
+	}
 
 	void InitAll(ID3D11Device* device);
 	void SetVariable();

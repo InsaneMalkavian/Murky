@@ -37,6 +37,12 @@ ModelStaticObject* SceneManager::Get(std::wstring name) {
 	list_iter->mPixelShader = fx::SimpleShader::PS;
 	list_iter->mVertexShader = fx::SimpleShader::VS;
 	list_iter->mInputLayout = fx::SimpleShader::IL;
-	list_iter->mMesh = mMeshManager->Get(L"Test");
+	if (name==L"cube12")
+	{
+		list_iter->mPixelShader = fx::TestShader2::PS;
+		list_iter->mVertexShader = fx::TestShader2::VS;
+		list_iter->mInputLayout = fx::TestShader2::IL;
+	}
+	list_iter->mMesh = mMeshManager->Get(name);
 	return  &*list_iter;
 	}

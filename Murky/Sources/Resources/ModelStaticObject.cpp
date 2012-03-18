@@ -15,8 +15,8 @@ void ModelStaticObject::Render(ID3D11DeviceContext* context) {
 
 	// @TODO: this code has to be moved to manager
 	context->IASetInputLayout(mInputLayout);
-	context->VSSetShader(mVertexShader, NULL, 0 );
-	context->PSSetShader(mPixelShader, NULL, 0 );
-	//context->Draw( mMesh->m_TotalVertices, 0 );
+	context->VSSetShader(mVertexShader, NULL, 0);
+	context->PSSetShader(mPixelShader, NULL, 0);
+	context->Draw(mMesh->mTotalVertices, 0);
 
 	}

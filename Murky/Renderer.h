@@ -31,5 +31,7 @@ class Renderer
 
 		ID3D11Texture2D*			mDepthTexture;
         ID3D11DepthStencilView*		mDepthStencilView;
+
+		ID3D11RasterizerState*		mCullNone;
 	};
 

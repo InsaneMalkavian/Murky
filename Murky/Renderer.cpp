@@ -15,7 +15,7 @@ Renderer::Renderer(void) {
 	d3dDevice = NULL;
 	mDepthTexture = NULL;
 	mDepthStencilView = NULL;
-	mDepthStencilView = NULL;
+	mCullNone = NULL;
 	}
 
 
@@ -93,18 +93,17 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
 	GetDeviceInfo(desc);
 	Log::logger.AddLine(WSTR_RENDERER+L"Device, swapchain and context created!");
 	Log::logger.AddLine(WSTR_RENDERER+L"DX FeatureLevel: "+GetDXFeatureLevel());
+	// we are done with device and context, now we create other resources
 	
-    ID3D11Texture2D* backBufferTexture;
-
+	// create RenderTargetView on BackBuffer
+	ID3D11Texture2D* backBufferTexture;
     result = swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBufferTexture);
-
     if (FAILED(result)) {
         DXTRACE_MSG(L"Failed to get the swap chain back buffer!");
         return S_FALSE;
     }
-
-    result = d3dDevice->CreateRenderTargetView(backBufferTexture, 0, &backBufferTarget);
-
+	
+	result = d3dDevice->CreateRenderTargetView(backBufferTexture, 0, &backBufferTarget);
     if (backBufferTexture)
         backBufferTexture->Release();
 
@@ -113,6 +112,7 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
         return S_FALSE;
     }
 
+	// create DepthStencil texture and view
 	D3D11_TEXTURE2D_DESC depthTexDesc;
     ZeroMemory( &depthTexDesc, sizeof( depthTexDesc ) );
     depthTexDesc.Width = width;
@@ -128,7 +128,6 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
     depthTexDesc.MiscFlags = 0;
 
     result = d3dDevice->CreateTexture2D(&depthTexDesc, NULL, &mDepthTexture);
-
     if (FAILED(result)) {
         DXTRACE_MSG(L"Failed to create the depth texture!");
         return false;
@@ -142,14 +141,25 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
     descDSV.Texture2D.MipSlice = 0;
 
     result = d3dDevice->CreateDepthStencilView(mDepthTexture, &descDSV, &mDepthStencilView);
-
     if (FAILED(result)) {
         DXTRACE_MSG(L"Failed to create the depth stencil target view!");
         return false;
     }
 
-    d3dContext->OMSetRenderTargets(1, &backBufferTarget, 0);
+    d3dContext->OMSetRenderTargets(1, &backBufferTarget, mDepthStencilView);
 
+	// create rasterizer
+	D3D11_RASTERIZER_DESC descRasterizer;
+	//ZeroMemory(&descRasterizer, sizeof(D3D11_RASTERIZER_DESC));
+	//descRasterizer.FillMode = D3D11_FILL_SOLID;
+	descRasterizer.CullMode = D3D11_CULL_NONE;
+	//descRasterizer.DepthClipEnable = true;
+
+	//descRasterizer.FrontCounterClockwise = true;
+	result = d3dDevice->CreateRasterizerState(&descRasterizer, &mCullNone);
+	d3dContext->RSSetState(mCullNone);
+
+	// Create viewport
     D3D11_VIEWPORT viewport;
     viewport.Width = static_cast<float>(width);
     viewport.Height = static_cast<float>(height);
@@ -157,8 +167,10 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
     viewport.MaxDepth = 1.0f;
     viewport.TopLeftX = 0.0f;
     viewport.TopLeftY = 0.0f;
-
     d3dContext->RSSetViewports(1, &viewport);
+
+	// Initialize perspective view
+	//D3DXMatrixPerspectiveFovLH()
 
 	// Initialize all shaders
 	fx::InitAll(d3dDevice);
@@ -167,18 +179,17 @@ HRESULT Renderer::InitDevice(HWND hWnd) {
 	}
 
 HRESULT Renderer::DestroyDevice(void) {
+	Util::SafeRelease(mCullNone);
 	Util::SafeRelease(mDepthStencilView);
 	Util::SafeRelease(mDepthTexture);
 	Util::SafeRelease(backBufferTarget);
 	Util::SafeRelease(swapChain);
 	Util::SafeRelease(d3dContext);
-	Util::SafeRelease(d3dDevice);	
+	Util::SafeRelease(d3dDevice);
 	return S_OK;
 	}
 
 void Renderer::Render() {
-	// this should be removed
-	d3dContext->Draw(3, 0);
 	}
 
 void Renderer::GetDeviceInfo(DXGI_ADAPTER_DESC &desc) {

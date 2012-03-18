@@ -2,6 +2,9 @@
 #include <DxErr.h>
 #include "Logger.h"
 
+// @TODO: delete it when collada parser will be done
+#include "MeshLoader.h"
+
 //--------------------------------------------------------------------------------------
 // Forward declarations
 //--------------------------------------------------------------------------------------
@@ -15,6 +18,8 @@ MurkyApp*					murky = NULL;
 //--------------------------------------------------------------------------------------
 int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow )
 {
+	//MeshLoader lrd;
+	//lrd.LoadDAE(L"cube12.dae");
     murky = new MurkyApp();
 
     UNREFERENCED_PARAMETER(hPrevInstance);
@@ -90,7 +95,8 @@ void MurkyApp::Render(void) {
 	}
 
 void MurkyApp::LoadMess(void) {
-	sceneManager->Get(L"StaticModel");
+	sceneManager->Get(L"test");
+	sceneManager->Get(L"cube12");
 	}
 
 //--------------------------------------------------------------------------------------

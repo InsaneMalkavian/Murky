@@ -28,6 +28,12 @@
     <Filter Include="Source Files\Shaders">
       <UniqueIdentifier>{8ec00d3b-e37e-49df-aca5-aded236ab314}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Thirdparty">
+      <UniqueIdentifier>{1926c800-4814-46ff-bb25-873da090a88e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Thirdparty\irrxml">
+      <UniqueIdentifier>{ae0a6ec4-cb0a-4ea3-b4b6-27ffa260e2ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Murky.cpp">
@@ -71,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="Sources\Shaders\Shaders.cpp">
       <Filter>Source Files\Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources\Thirdparty\irrxml\irrXML.cpp">
+      <Filter>Source Files\Thirdparty\irrxml</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +142,27 @@
     </ClInclude>
     <ClInclude Include="Sources\Shaders\Shaders.h">
       <Filter>Source Files\Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Thirdparty\irrxml\CXMLReaderImpl.h">
+      <Filter>Source Files\Thirdparty\irrxml</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Thirdparty\irrxml\fast_atof.h">
+      <Filter>Source Files\Thirdparty\irrxml</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Thirdparty\irrxml\heapsort.h">
+      <Filter>Source Files\Thirdparty\irrxml</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Thirdparty\irrxml\irrArray.h">
+      <Filter>Source Files\Thirdparty\irrxml</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Thirdparty\irrxml\irrString.h">
+      <Filter>Source Files\Thirdparty\irrxml</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Thirdparty\irrxml\irrTypes.h">
+      <Filter>Source Files\Thirdparty\irrxml</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\Thirdparty\irrxml\irrXML.h">
+      <Filter>Source Files\Thirdparty\irrxml</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

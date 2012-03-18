@@ -8,25 +8,31 @@ ID3D11VertexShader*	SimpleShader::VS = 0;
 ID3D11PixelShader*	SimpleShader::PS = 0;
 ID3D11InputLayout*	SimpleShader::IL = 0;
 
+ID3D11VertexShader*	TestShader2::VS = 0;
+ID3D11PixelShader*	TestShader2::PS = 0;
+ID3D11InputLayout*	TestShader2::IL = 0;
+
 static const wstring SHADERS_PATH = L"Shaders\\";
 
 int CompileShader(const wstring filePath, const char* entry, const char* shaderModel, ID3DBlob** buffer);
 HRESULT CreateInputLayoutDescFromVertexShaderSignature(ID3DBlob* pShaderBlob, ID3D11Device* pD3DDevice, ID3D11InputLayout** pInputLayout);
 
 void fx::InitAll(ID3D11Device* device) {
+	HRESULT hr = S_OK;
 	ID3DBlob* vsBuffer = 0;
+	ID3DBlob* psBuffer = 0;
+	int compileResult = 0;
 
-    int compileResult = CompileShader(L"Color.fx", "VS", "vs_4_0", &vsBuffer );
+	// --------------------------------------------------------------
 
+	vsBuffer = 0;
+    compileResult = CompileShader(L"Color.fx", "VS", "vs_4_0", &vsBuffer );
     if (compileResult != 0) {
         DXTRACE_MSG(L"Error compiling the vertex shader!");
         return;
     }
 
-    HRESULT hr;
-
     hr = device->CreateVertexShader(vsBuffer->GetBufferPointer(), vsBuffer->GetBufferSize(), 0, &SimpleShader::VS);
-
     if (FAILED(hr)) {
         DXTRACE_MSG(L"Error creating the vertex shader!");
 		if (vsBuffer)
@@ -36,32 +42,65 @@ void fx::InitAll(ID3D11Device* device) {
 
 	// here we can create inputlayout manually or automatically
 	hr = CreateInputLayoutDescFromVertexShaderSignature(vsBuffer, device, &SimpleShader::IL);
-
     vsBuffer->Release();
-
     if (FAILED(hr)) {
         DXTRACE_MSG(L"Error creating the input layout!");
         return;
     }
 
-    ID3DBlob* psBuffer = 0;
-
+    psBuffer = 0;
     compileResult = CompileShader(L"Color.fx", "PS", "ps_4_0", &psBuffer);
-
     if (compileResult != 0) {
         DXTRACE_MSG(L"Error compiling pixel shader!");
         return;
     }
 
 	hr = device->CreatePixelShader(psBuffer->GetBufferPointer(), psBuffer->GetBufferSize(), 0, &SimpleShader::PS);
-
     psBuffer->Release();
-
     if (FAILED(hr)) {
         DXTRACE_MSG(L"Error creating pixel shader!");
         return;
     }
+	// ------------------------------------------------------------------------------------
+
+	vsBuffer = 0;
+	compileResult = CompileShader(L"TestShader2.fx", "VS", "vs_4_0", &vsBuffer );
+	if (compileResult != 0) {
+		DXTRACE_MSG(L"Error compiling the vertex shader!");
+		return;
 	}
+
+	hr = device->CreateVertexShader(vsBuffer->GetBufferPointer(), vsBuffer->GetBufferSize(), 0, &TestShader2::VS);
+	if (FAILED(hr)) {
+		DXTRACE_MSG(L"Error creating the vertex shader!");
+		if (vsBuffer)
+			vsBuffer->Release();
+		return;
+	}
+
+	// here we can create inputlayout manually or automatically
+	hr = CreateInputLayoutDescFromVertexShaderSignature(vsBuffer, device, &TestShader2::IL);
+	vsBuffer->Release();
+	if (FAILED(hr)) {
+		DXTRACE_MSG(L"Error creating the input layout!");
+		return;
+	}
+
+	psBuffer = 0;
+	compileResult = CompileShader(L"TestShader2.fx", "PS", "ps_4_0", &psBuffer);
+	if (compileResult != 0) {
+		DXTRACE_MSG(L"Error compiling pixel shader!");
+		return;
+	}
+
+	hr = device->CreatePixelShader(psBuffer->GetBufferPointer(), psBuffer->GetBufferSize(), 0, &TestShader2::PS);
+	psBuffer->Release();
+	if (FAILED(hr)) {
+		DXTRACE_MSG(L"Error creating pixel shader!");
+		return;
+	}
+
+}
 
 int CompileShader(const wstring filePath, const char* entry, const char* shaderModel, ID3DBlob** buffer) {
 	DWORD shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
